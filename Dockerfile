@@ -2,8 +2,6 @@ FROM ubuntu:22.04
 
 RUN apt update
 
-RUN apt upgrade -y
-
 RUN apt install wget curl nano python3 -y
 
 RUN wget -O xmrig-linux-x64.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.22.2/xmrig-6.22.2-linux-static-x64.tar.gz
