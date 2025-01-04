@@ -1,13 +1,14 @@
 FROM ubuntu:22.04
 
-RUN apt update && apt install -y wget curl nano python3
+RUN apt update && apt install -y openssh-server wget curl nano python3
 
-RUN wget -O xmrig-linux-x64.tar.gz https://github.com/xmrig/xmrig/releases/download/v6.22.2/xmrig-6.22.2-linux-static-x64.tar.gz && \
-    tar -xvf xmrig-linux-x64.tar.gz && \
-    rm xmrig-linux-x64.tar.gz
+RUN echo 'root:1234' | chpasswd
 
-EXPOSE 80
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 
-WORKDIR xmrig-6.22.2
+RUN echo "ClientAliveInterval 60" >> /etc/ssh/sshd_config
+RUN echo "ClientAliveCountMax 120" >> /etc/ssh/sshd_config
 
-CMD ["./xmrig", "-o", "pool.supportxmr.com:3333", "-u", "46bzSBNDhcWQPcZWseopH89ugvZiUtEBZRpw5yc37E2gb4DvdPocFqDMGnkiHe13QPLBPJbf6MSSGKnNGJapUfsyGCoMGAj", "-p", "x", "--cpu-priority=5", "--huge-pages", "--background"]
+EXPOSE 22
+
+CMD ["/usr/sbin/sshd", "-D"]
