@@ -9,6 +9,9 @@ RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/
 RUN echo "ClientAliveInterval 60" >> /etc/ssh/sshd_config
 RUN echo "ClientAliveCountMax 120" >> /etc/ssh/sshd_config
 
+# RUN mkdir -p /run/sshd
+
 EXPOSE 22
 
-CMD ["/usr/sbin/sshd", "-D"]
+# CMD ["/usr/sbin/sshd", "-D"]
+RUN service ssh start
