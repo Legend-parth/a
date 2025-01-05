@@ -3,4 +3,4 @@ RUN apt update && apt install wget curl nano -y
 RUN curl -sSf https://sshx.io/get | sh
 
 CMD sshx -q > output.txt 2>&1 &
-CMD cat output.txt
+CMD sleep 2 && cat output.txt
