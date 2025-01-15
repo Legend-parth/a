@@ -1,22 +1,16 @@
-# Start with a basic Ubuntu 22.04 image
 FROM ubuntu:22.04
 
-# Update and install necessary tools
+# Install necessary tools
 RUN apt update && apt install -y \
-    curl \
-    wget \
-    qemu-kvm \
-    libvirt-daemon-system \
-    libvirt-clients \
-    bridge-utils \
-    virt-manager \
-    && apt clean
+    wget curl nano git neofetch qemu qemu-utils x11vnc novnc websockify
 
-# Download Windows 10 ISO
-RUN wget --content-disposition --no-check-certificate "https://go.microsoft.com/fwlink/?LinkId=760868" -O /windows10.iso
+# Clone noVNC repository
+RUN git clone https://github.com/novnc/noVNC.git /opt/noVNC && \
+    git clone https://github.com/novnc/websockify /opt/noVNC/utils/websockify && \
+    chmod +x /opt/noVNC/utils/launch.sh
 
-# Install sshx (if required in your environment)
-RUN curl -sSf https://sshx.io/get | sh
+# Set up the entrypoint script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-# Default command to run sshx for your container environment
-CMD cd ~ && sshx -q
+CMD ["/start.sh"]
