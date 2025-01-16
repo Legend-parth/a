@@ -1,8 +1,13 @@
 FROM ubuntu:22.04
 
+# Set timezone non-interactively
+ENV DEBIAN_FRONTEND=noninteractive
+RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && \
+    apt update && apt install -y tzdata && \
+    dpkg-reconfigure --frontend noninteractive tzdata
+
 # Install necessary tools
-RUN apt update && apt install -y \
-    wget curl nano git neofetch qemu qemu-utils x11vnc novnc websockify
+RUN apt install -y wget curl nano git neofetch qemu qemu-utils x11vnc novnc websockify
 
 # Clone noVNC repository
 RUN git clone https://github.com/novnc/noVNC.git /opt/noVNC && \
