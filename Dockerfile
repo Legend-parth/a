@@ -2,7 +2,10 @@ FROM ubuntu:22.04
 
 # Set timezone non-interactively
 ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Kolkata
+
 RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && \
+    echo "Asia/Kolkata" > /etc/timezone && \
     apt update && apt install -y tzdata && \
     dpkg-reconfigure --frontend noninteractive tzdata
 
