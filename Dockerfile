@@ -1,24 +1,17 @@
 FROM ubuntu:22.04
 
-# Set timezone non-interactively
+# Set timezone and non-interactive frontend
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Kolkata
 
-RUN ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && \
-    echo "Asia/Kolkata" > /etc/timezone && \
-    apt update && apt install -y tzdata && \
-    dpkg-reconfigure --frontend noninteractive tzdata
+# Preconfigure timezone package and install all required packages
+RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
+    echo $TZ > /etc/timezone && \
+    apt update && \
+    apt install -y tzdata wget curl nano git neofetch qemu qemu-utils x11vnc novnc websockify && \
+    dpkg-reconfigure --frontend noninteractive tzdata && \
+    apt clean
 
-# Install necessary tools
-RUN apt install -y wget curl nano git neofetch qemu qemu-utils x11vnc novnc websockify
-
-# Clone noVNC repository
-RUN git clone https://github.com/novnc/noVNC.git /opt/noVNC && \
-    git clone https://github.com/novnc/websockify /opt/noVNC/utils/websockify && \
-    chmod +x /opt/noVNC/utils/launch.sh
-
-# Set up the entrypoint script
-COPY start.sh /start.sh
-RUN chmod +x /start.sh
-
-CMD ["/start.sh"]
+# Add startup command for X11VNC and noVNC
+CMD ["x11vnc", "-display", ":0", "-forever", "-shared", "-rfbport", "5900", "-bg"] && \
+    ["websockify", "--web", "/usr/share/novnc", "6080", "localhost:5900"]
