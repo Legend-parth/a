@@ -4,7 +4,7 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Kolkata
 
-# Preconfigure timezone package and install all required packages
+# Preconfigure timezone package and install required packages
 RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
     echo $TZ > /etc/timezone && \
     apt update && \
@@ -12,6 +12,9 @@ RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
     dpkg-reconfigure --frontend noninteractive tzdata && \
     apt clean
 
-# Add startup command for X11VNC and noVNC
-CMD ["x11vnc", "-display", ":0", "-forever", "-shared", "-rfbport", "5900", "-bg"] && \
-    ["websockify", "--web", "/usr/share/novnc", "6080", "localhost:5900"]
+# Copy the startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
+# Start the services using the startup script
+CMD ["/start.sh"]
