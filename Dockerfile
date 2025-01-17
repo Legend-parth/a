@@ -1,24 +1,13 @@
 FROM ubuntu:22.04
 
-# Set the timezone
+# Set the timezone environment variable
 ENV TZ=Asia/Kolkata
-
-# Install necessary packages
-RUN apt update && apt install -y \
-    tzdata \
-    wget \
-    curl \
-    nano \
-    git \
-    neofetch \
-    qemu \
-    qemu-utils \
-    x11vnc \
-    novnc \
-    websockify \
- && ln -fs /usr/share/zoneinfo/$TZ /etc/localtime \
- && dpkg-reconfigure --frontend noninteractive tzdata \
- && apt clean
+RUN ln -fs /usr/share/zoneinfo/$TZ /etc/localtime \
+    && echo $TZ > /etc/timezone \
+    && apt update \
+    && apt install -y tzdata wget curl nano git neofetch qemu qemu-utils x11vnc novnc websockify \
+    && dpkg-reconfigure -f noninteractive tzdata \
+    && apt clean
 
 # Copy the startup script
 COPY start.sh /start.sh
