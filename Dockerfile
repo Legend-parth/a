@@ -19,7 +19,7 @@ RUN mkdir -p /opt/noVNC && \
     git clone https://github.com/novnc/websockify /opt/noVNC/utils/websockify && \
     chmod +x /opt/noVNC/utils/novnc_proxy
 
-# Copy start script
+# Copy the start script
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
 
