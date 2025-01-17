@@ -16,7 +16,7 @@ RUN mkdir -p /opt/noVNC && \
     git clone https://github.com/novnc/noVNC.git /opt/noVNC && \
     git clone https://github.com/novnc/websockify /opt/noVNC/utils/websockify && \
     chmod +x /opt/noVNC/utils/launch.sh
-
+    
 # Copy the startup script
 COPY start.sh /start.sh
 RUN chmod +x /start.sh
