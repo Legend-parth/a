@@ -1,23 +1,28 @@
-#!/bin/bash
+FROM ubuntu:22.04
 
-# Set the VNC password
-VNC_PASSWORD_FILE="/root/.vnc/passwd"
-if [ ! -f "$VNC_PASSWORD_FILE" ]; then
-    mkdir -p /root/.vnc
-    echo "Legends@2025" | x11vnc -storepasswd - $VNC_PASSWORD_FILE
-    chmod 600 $VNC_PASSWORD_FILE
-fi
+ENV DEBIAN_FRONTEND=noninteractive
+ENV TZ=Asia/Kolkata
 
-# Start a virtual display (Xvfb)
-Xvfb :0 -screen 0 1280x1024x24 &
+# Install Docker and other necessary tools
+RUN apt update && \
+    apt install -y tzdata wget curl nano git neofetch qemu qemu-utils x11vnc novnc websockify xfce4-terminal ttyd \
+                   docker.io && \
+    ln -fs /usr/share/zoneinfo/$TZ /etc/localtime && \
+    dpkg-reconfigure --frontend noninteractive tzdata && \
+    apt clean
 
-# Start the x11vnc server
-x11vnc -forever -usepw -shared -display :0 &
+# Set up noVNC and dependencies
+RUN mkdir -p /opt/noVNC && \
+    git clone https://github.com/novnc/noVNC.git /opt/noVNC && \
+    git clone https://github.com/novnc/websockify /opt/noVNC/utils/websockify && \
+    chmod +x /opt/noVNC/utils/novnc_proxy
 
-# Start noVNC server
-/opt/noVNC/utils/novnc_proxy --vnc localhost:5900 --listen 6080 &
+# Copy startup script
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
 
-# Start ttyd for terminal access
-ttyd -p 6080 bash &
-# Keep the container running
-tail -f /dev/null
+# Expose necessary ports
+EXPOSE 5900 6080
+
+# Set default command
+CMD ["/start.sh"]
