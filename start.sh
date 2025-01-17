@@ -1,21 +1,21 @@
 #!/bin/bash
 
-# Set the VNC password
-VNC_PASSWORD="/root/.vnc/passwd"
-if [ ! -f "$VNC_PASSWORD" ]; then
+# Set the VNC password non-interactively
+VNC_PASSWORD_FILE="/root/.vnc/passwd"
+if [ ! -f "$VNC_PASSWORD_FILE" ]; then
     mkdir -p /root/.vnc
-    x11vnc -storepasswd "your_vnc_password" $VNC_PASSWORD
+    echo "your_vnc_password" | x11vnc -storepasswd - $VNC_PASSWORD_FILE
+    chmod 600 $VNC_PASSWORD_FILE
 fi
 
-# Start the X11 server (you might need to set this up if it's not already running)
+# Start a virtual display (Xvfb)
 Xvfb :0 -screen 0 1280x1024x24 &
 
-# Start the VNC server
-x11vnc -forever -usepw -create -display :0 &
+# Start the x11vnc server
+x11vnc -forever -usepw -shared -display :0 &
 
-# Start noVNC web server (providing the terminal access)
-cd /opt/noVNC
-/opt/noVNC/utils/novnc_proxy --vnc localhost:5900 --listen 6080 &
+# Start the noVNC web interface
+/opt/noVNC/utils/launch.sh --vnc localhost:5900 --listen 6080 &
 
-# Run the terminal (this will open a terminal window for you to interact with)
-xfce4-terminal --geometry=80x24+10+10 &
+# Keep the container running
+tail -f /dev/null
