@@ -1,10 +1,12 @@
 FROM ubuntu:22.04
 
-# Set timezone environment variable
+# Set timezone environment variable to noninteractive to avoid manual selection
+ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Kolkata
 
 # Install required packages and noVNC
 RUN apt update && apt install -y tzdata wget curl nano git neofetch qemu qemu-utils x11vnc novnc websockify python3 \
+    && ln -fs /usr/share/zoneinfo/$TZ /etc/localtime \
     && dpkg-reconfigure -f noninteractive tzdata \
     && apt clean
 
