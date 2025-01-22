@@ -5,13 +5,10 @@ FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Kolkata
 
-# Install necessary packages
-RUN apt update && \
-    apt install -y tzdata wget curl nano git neofetch \
-                   qemu qemu-utils x11vnc novnc websockify xfce4-terminal && \
-    ln -fs /usr/share/zoneinfo/Asia/Kolkata /etc/localtime && \
-    dpkg-reconfigure --frontend noninteractive tzdata && \
-    apt clean
-
+# Install necessary packages and set up SSHX
+RUN apt update && apt install -y wget curl nano git neofetch qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils
 RUN curl -sSf https://sshx.io/get | sh
-CMD cd ~ && sshx -q
+
+# Expose KVM device and other privileges
+CMD ["sh", "-c", "modprobe kvm && modprobe kvm_intel && sshx -q"]
+
